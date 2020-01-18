@@ -1,6 +1,7 @@
 from flask import Flask
 import logging
 import datetime
+import pytz
 
 app = Flask(__name__)
 
@@ -12,9 +13,12 @@ logging.warning('is when this event was logged.')
 
 ##logging.warning('Hello World! Good %s')
 ##get the current time in military time
-z = int(datetime.datetime.today().strftime('%H')) ##z is just the number for hour
-##logging.warning(z)
-##convert the military time into morning, afternoon, etc
+##z = int(datetime.datetime.today().strftime('%H')) ##z is just the number for hour
+##in local, it gets local time in hours, however in the flask app, it gets UTC time
+
+##convert UTC time to PST time?
+z = datetime.datetime.now(tz=pytz.utc)
+z = z.astimezone(pytz.timezone('US/Pacific')).hour
 
 ##function to convert hours to time of day
 def gettime(curr_time):

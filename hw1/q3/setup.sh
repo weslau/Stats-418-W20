@@ -36,7 +36,12 @@ wget https://repo.anaconda.com/archive/Anaconda3-2019.10-Linux-x86_64.sh chmod +
 bash ~/Downloads/Anaconda3-2019.10-Linux-x86_64.sh
 # activate the installation by sourching bashrc file
 source ~/.bashrc
+#create a conda environment with python3 and activate it
+conda create --name my_env python=3
+source activate my_env
 
 # Using Anaconda install Keras, PyTorch and TensorFlow
-
+conda install --name my_env keras
+conda install --name my_env pytorch torchvision cpuonly -c pytorch
+conda install --name my_env tensorflow
 

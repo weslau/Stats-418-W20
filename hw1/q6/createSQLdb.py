@@ -6,11 +6,11 @@ df = pd.read_csv(r'C:\Users\lauw02\Desktop\stats 418\Stats-418-W20\hw1\q5\data.c
 ##convert it to a SQL databse
 
 ##print(df.head())
-conn = sqlite3.connect('db.sqlite3')
+conn = sqlite3.connect('db2.sqlite3')
 c = conn.cursor()
 ##create table
-c.execute('CREATE TABLE DATA (Date date, S1 text, S2 text, S3 text, S4 text, S5 text,'
-          ' S6 text, S7 text, S8 text, S9 text, S10 text)')
+c.execute('CREATE TABLE DATA (Date date, S1 int, S2 int, S3 int, S4 int, S5 int,'
+          ' S6 int, S7 int, S8 int, S9 int, S10 int)')
 conn.commit()
 
 df.to_sql('DATA', conn, if_exists='replace', index = False)

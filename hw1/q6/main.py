@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[2]:
+# In[1]:
 
 
 import pandas as pd
@@ -122,22 +122,25 @@ day_winner.store_name.value_counts().head(1)
 print(df.groupby('store_name')['num_sold'].sum().sort_values(ascending=False)[[4]])
 
 
-# In[135]:
+# In[6]:
 
 
 # 6.6 Your program should create a file named repaired.csv in the directory hw1/q4 which
 # contains the same data as data.csv , but with “N/A” values replaced with the median
 # sale of that store, over the entire 3-year interval. Retain the header row found in
 # data.csv.
-rep = df.copy()
-rep.loc[:,'median_sales'] = rep.groupby('store_name')['num_sold'].transform(lambda x: x.median())
-rep[['store_name','median_sales']].drop_duplicates()
-rep.loc[:,'num_sold'] = rep['num_sold'].combine_first(rep['median_sales'])
-rep = rep.pivot(index='sale_date',columns='store_name',values='num_sold').reset_index()
- 
-# re-create the data.csv header columns for each store: s1-s10
-cols = ['sale_date']
-cols.extend(['S'+str(r+1) for r in range(10)])
-rep = rep.loc[:, cols]
-rep.to_csv('../q6/repaired.csv', index=False)
+df2 = pd.read_csv("C:\\Users\\lauw02\\Desktop\\stats 418\\Stats-418-W20\\hw1\\q5\\data.csv")
+df2.index=df2["Date"]
+df_stores_only = df2[["S1","S2","S3","S4","S5","S6","S7","S8","S9","S10"]]
+
+#df_stores_only
+
+
+# In[11]:
+
+
+for i in df_stores_only.columns:
+    df2[i] = df2[i].fillna(df2[i].median())
+    
+df2[df_stores_only.columns].to_csv("C:\\Users\\lauw02\\Desktop\\stats 418\\Stats-418-W20\\hw1\\q5\\repaired.csv")
 

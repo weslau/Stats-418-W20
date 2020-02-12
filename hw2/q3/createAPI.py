@@ -101,7 +101,7 @@ def total_crashes(year=False):
         # If they they did not provide a year return a JSON dictionary of plane
         # crashes for every year we have available
         if year is False:
-            return df.to_dict()
+            return df.to_dict() ## TypeError: 'dict' object is not callable
 
         # If they requested a year we have, return the number of plane crashes
         # for that year

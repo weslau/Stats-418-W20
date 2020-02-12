@@ -31,7 +31,7 @@ df2 = table_per_year.rename_axis('unique_years').reset_index(name='movie_counts'
 #find the average ratings of movies each year
 #plot the average ratings of movies in each year as a scatter plot on top of that. For each point in the scatter plot, add error bars corresponding to 95% intervals.
 agg = df.groupby('year').agg({'title':'count', 'rating':'mean'}).reset_index()
-agg.loc[:,'se'] = agg['title'] / np.sqrt(agg['title'])
+agg.loc[:,'se'] = 1 / np.sqrt(agg['title'])
 agg.loc[:,'lwr'] = agg['rating'] - 1.96*agg['se']
 agg.loc[:,'upr'] = agg['rating'] + 1.96*agg['se']
 #agg

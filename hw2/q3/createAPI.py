@@ -4,6 +4,10 @@ import numpy as np
 from flask import Flask, escape, request
 import os
 from datetime import datetime
+import requests
+import json
+import sqlite3
+import xml.etree.ElementTree as ET
 
 # This is how we initiate a flask app to then build it
 app = Flask(__name__)
@@ -28,94 +32,18 @@ def hello2(name):
     return f"Hello, {escape(name)} (v2)"
 
 
-# Let's add some basic things:
-#
-# > http://$HOSTNAME/v3 --  Hello world
-# > http://$HOSTNAME/v3/$some_name -- Hello $some_name
-# > http://$HOSTNAME/test/hello-world -- Hello World
-@app.route("/v3", methods=["GET"])
-@app.route("/test/hello-world", methods=["GET"])
-@app.route("/v3/<string:name>", methods=["GET"])
-def hello3(name="World"):
-    return f"Hello, {escape(name)} (v3)"
+# first create the data call to OMDB
+# put it under different route name
+@app.route("/search/<string:query>", methods=["GET"])
+def pullData(query):
+    url = 'http://www.omdbapi.com/'
+    key = '747d9548'
+    params = {"apikey": key, "t": query}
+    query1 = request.args.get('query')
+    print(query1)
+    return query1
 
 
-###################
-# What about building an API ontop of a pandas dataset?
-#
-# Lets use Airplane crash data: https://www.kaggle.com/saurograndi/airplane-crashes-since-1908
-#
-Data = pd.read_csv(r"C:\Users\lauw02\Desktop\stats 418\Stats-418-W20\hw2\q3\data\Airplane_Crashes_and_Fatalities_Since_1908.csv")
-
-# Cleanup
-Data["Time"] = Data["Time"].replace(np.nan, "00:00")
-Data["Time"] = Data["Time"].str.replace("c: ", "")
-Data["Time"] = Data["Time"].str.replace("c:", "")
-Data["Time"] = Data["Time"].str.replace("c", "")
-Data["Time"] = Data["Time"].str.replace("12'20", "12:20")
-Data["Time"] = Data["Time"].str.replace("18.40", "18:40")
-Data["Time"] = Data["Time"].str.replace("0943", "09:43")
-Data["Time"] = Data["Time"].str.replace("22'08", "22:08")
-Data["Time"] = Data["Time"].str.replace(
-    "114:20", "00:00"
-)  # is it 11:20 or 14:20 or smth else?
-Data["Time"] = Data["Date"] + " " + Data["Time"]  # joining two rows
-
-
-def todate(x):
-    return datetime.strptime(x, "%m/%d/%Y %H:%M")
-
-
-Data["Time"] = Data["Time"].apply(todate)  # convert to date type
-print("Date ranges from " + str(Data.Time.min()) + " to " + str(Data.Time.max()))
-# just to avoid duplicates like 'British Airlines' and 'BRITISH Airlines'
-Data.Operator = Data.Operator.str.upper()
-
-
-##################
-# Lets build API functionality to provide number of airplane crashes by year
-#
-# > http://$HOSTNAME/airplane/total -- number of crashes for every year
-# > http://$HOSTNAME/airplane/total/$year -- number of crashes for a given year
-#
-
-# Report error if they pass us a string for year
-@app.route("/airplane/total/<string:year>")
-def foo(year):
-    return f"Sorry I can only handle integers"
-
-
-# handle /airplane/total and /airplane/total/$year
-@app.route("/airplane/total", methods=["GET", "POST"])
-@app.route("/airplane/total/<int:year>", methods=["GET", "POST"])
-def total_crashes(year=False):
-    # Build a pandas dataframe of number of plane crashes by year
-    df = (
-        Data.groupby(Data.Time.dt.year)[["Date"]]
-        .count()
-        .rename(columns={"Date": "Year"})
-    )
-
-    # For now we are only supporting GET returns...
-    if request.method == "GET":
-        # If they they did not provide a year return a JSON dictionary of plane
-        # crashes for every year we have available
-        if year is False:
-            return df.to_dict() ## TypeError: 'dict' object is not callable
-
-        # If they requested a year we have, return the number of plane crashes
-        # for that year
-        if year <= 2009 and year >= 1908:
-            return str(df["Year"][year])
-        # If they requested a year we don't have, report a 404 error
-        else:
-            return "ERROR 404: Our dataset only contains data for 1908-2009", 404
-
-    # FIXME: Evetually we might also want to support POST requests so people
-    # can send us information on new plane crashes we do not yet know about
-    if request.method == "POST":
-        # save_data()
-        return "ERROR 404: We do not yet know how to save", 404
 
 
 ##################

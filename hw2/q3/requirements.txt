@@ -8,3 +8,4 @@ datetime==4.3
 pytz==2019.3
 pandas
 numpy
+requests

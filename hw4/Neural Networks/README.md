@@ -1,0 +1,1 @@
+Upon completing the Kaggle tutorial on Neural Networks, please download your Jupyter Notebooks for each problem from Kaggle, and place them in this directory.
